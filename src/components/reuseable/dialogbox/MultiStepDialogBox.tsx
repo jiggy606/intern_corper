@@ -18,13 +18,23 @@ type MultiStepDialogProps = {
     content: ReactNode;
   }[];
   onSubmit: () => void;
+  canProceed?: boolean; 
+  canSubmit?: boolean;  
 };
 
-const MultiStepDialogBox = ({ triggerButton, steps, onSubmit }: MultiStepDialogProps) => {
+const MultiStepDialogBox = ({
+  triggerButton,
+  steps,
+  onSubmit,
+  canProceed = true,
+  canSubmit = true,
+}: MultiStepDialogProps) => {
   const [step, setStep] = useState(0);
   const [open, setOpen] = useState(false);
 
-  const nextStep = () => setStep((prev) => prev + 1);
+  const nextStep = () => {
+    if (canProceed) setStep((prev) => prev + 1);
+  };
   const prevStep = () => setStep((prev) => prev - 1);
   const reset = () => setStep(0);
 
@@ -34,8 +44,11 @@ const MultiStepDialogBox = ({ triggerButton, steps, onSubmit }: MultiStepDialogP
   };
 
   const handleSubmit = () => {
-    onSubmit();
-    setOpen(false); 
+    if (canSubmit) {
+      onSubmit();
+      setOpen(false);
+      reset();
+    }
   };
 
   return (
@@ -60,9 +73,13 @@ const MultiStepDialogBox = ({ triggerButton, steps, onSubmit }: MultiStepDialogP
           )}
 
           {step < steps.length - 1 ? (
-            <Button onClick={nextStep}>Next</Button>
+            <Button onClick={nextStep} disabled={!canProceed}>
+              Next
+            </Button>
           ) : (
-            <Button onClick={handleSubmit}>Submit</Button> 
+            <Button onClick={handleSubmit} disabled={!canSubmit}>
+              Submit
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

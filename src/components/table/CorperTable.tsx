@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { User } from "@/types/User"
 
+
 const mockData: User[] = Array.from({ length: 24 }, (_, i) => ({
   id: i + 1,
   name: `User ${i + 1}`,
@@ -65,7 +66,8 @@ const columns: ColumnDef<User>[] = [
   },
 ]
 
-export default function InternTable({ data }: { data: User[] }) {
+
+export default function CorperTable({ data }: { data: User[] }) {
   const [globalFilter, setGlobalFilter] = useState("")
 
   const table = useReactTable({
@@ -87,20 +89,16 @@ export default function InternTable({ data }: { data: User[] }) {
         placeholder="Search..."
         value={globalFilter}
         onChange={(e) => setGlobalFilter(e.target.value)}
-        className="w-full sm:w-1/2"
+        className="w-1/3"
       />
 
-      <div className="rounded-md border overflow-x-auto">
-        <Table className="min-w-[800px]">
+      <div className="rounded-md border">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="cursor-pointer whitespace-nowrap"
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
+                  <TableHead key={header.id} className="cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {{
                       asc: " 🔼",
@@ -116,7 +114,7 @@ export default function InternTable({ data }: { data: User[] }) {
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="whitespace-nowrap">
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -127,7 +125,7 @@ export default function InternTable({ data }: { data: User[] }) {
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+      <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
           Showing {table.getState().pagination.pageIndex * 10 + 1} -{" "}
           {Math.min(
