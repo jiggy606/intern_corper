@@ -25,13 +25,17 @@ import { Button } from "@/components/ui/button"
 import { User } from "@/types/User"
 
 
-const mockData: User[] = Array.from({ length: 48 }, (_, i) => ({
+const mockData: User[] = Array.from({ length: 24 }, (_, i) => ({
   id: i + 1,
   name: `User ${i + 1}`,
-  email: `user${i + 1}@mail.com`,
-  department: i % 2 === 0 ? "Engineering" : "HR",
-  role: i % 3 === 0 ? "Admin" : "Intern",
-  joined: `2023-0${(i % 9) + 1}-15`,
+  phoneNumber: `080000000${i}`,
+  emailAddress: `user${i + 1}@mail.com`,
+  address: `Address ${i + 1}`,
+  workDays: [],
+  startDate: `2023-0${(i % 9) + 1}-01`,
+  endDate: `2023-0${(i % 9) + 2}-01`,
+  department: [],
+  supervisor: [],
 }))
 
 const columns: ColumnDef<User>[] = [
@@ -45,22 +49,23 @@ const columns: ColumnDef<User>[] = [
     header: "Name",
   },
   {
-    accessorKey: "workdays",
+    accessorKey: "workDays",
     header: "Work Days",
   },
   {
-    accessorKey: "startdate",
+    accessorKey: "startDate",
     header: "Start Date",
   },
   {
-    accessorKey: "end date",
+    accessorKey: "endDate",
     header: "End Date",
   },
   {
-    accessorKey: "delete",
+    accessorKey: "status",
     header: "Status",
   },
 ]
+
 
 export default function InternTable({ data }: { data: User[] }) {
   const [globalFilter, setGlobalFilter] = useState("")

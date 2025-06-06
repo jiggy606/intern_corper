@@ -4,6 +4,7 @@ import { useState } from "react"
 import InternTable from "@/components/table/InternTable"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -16,23 +17,42 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
 import { User } from "@/types/User"
+import { Weekday, WEEKDAYS } from "@/types/User"
 
 const Intern = () => {
   const [interns, setInterns] = useState<User[]>([])
-  const [formData, setFormData] = useState({
-    id: "",
-    name: "",
-    workDays: "",
-    startDate: "",
-    endDate: "",
+const [formData, setFormData] = useState({
+  id: "",
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  workDays: [] as Weekday[], // update this line
+  department: "",
+  startDate: "",
+  endDate: "",
+  supervisor: "",
+  status: ""
+});
+
+const toggleWorkDay = (day: Weekday) => {
+  setFormData((prev) => {
+    const isSelected = prev.workDays.includes(day)
+    let updatedDays = isSelected
+      ? prev.workDays.filter((d) => d !== day)
+      : [...prev.workDays, day]
+
+    if (updatedDays.length > 3) return prev // Enforce max 3
+    return { ...prev, workDays: updatedDays }
   })
+}
 
   const handleAddIntern = () => {
     const newIntern: User = {
         id: interns.length + 1,
         name: formData.name,
         startDate: formData.startDate,
-        workDays: [],
+        workDays: formData.workDays,
         endDate: formData.endDate,
         phoneNumber: "",
         emailAddress: "",
@@ -89,6 +109,27 @@ const Intern = () => {
         </SelectContent>
       </Select>
 
+      {/* weekdays should be here */}
+        <div className=" py-2">
+        <p className="font-medium mb-2">Select workdays:</p>
+        <div className="flex flex-wrap gap-4">
+            {WEEKDAYS.map((day) => (
+            <label key={day} className="flex items-center space-x-2">
+                <Checkbox
+                checked={formData.workDays.includes(day)}
+                onCheckedChange={() => toggleWorkDay(day)}
+                />
+                <span>{day}</span>
+            </label>
+            ))}
+        </div>
+        {formData.workDays.length > 4 && (
+            <p className="text-sm text-red-500 mt-1">Maximum of 3 days allowed</p>
+        )}
+        </div>
+
+
+
       <Select
         onValueChange={(value) => setFormData({ ...formData, department: value })}
       >
@@ -144,7 +185,16 @@ const Intern = () => {
         />
       </div>
 
-      <InternTable data={interns} />
+        {interns.length === 0 ? (
+            <div className="flex items-center justify-center h-[60vh]">
+                <p className="text-center text-gray-400 text-xl font-medium">
+                No interns registered...
+                </p>
+            </div>
+        ) : (
+        <InternTable data={interns} />
+        )}
+
     </div>
   )
 }
