@@ -22,15 +22,8 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { User } from "@/types/User"
 
-type User = {
-  id: number
-  name: string
-  email: string
-  department: string
-  role: string
-  joined: string
-}
 
 const mockData: User[] = Array.from({ length: 48 }, (_, i) => ({
   id: i + 1,
@@ -52,20 +45,20 @@ const columns: ColumnDef<User>[] = [
     header: "Name",
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "workdays",
+    header: "Work Days",
   },
   {
-    accessorKey: "department",
-    header: "Department",
+    accessorKey: "startdate",
+    header: "Start Date",
   },
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: "end date",
+    header: "End Date",
   },
   {
-    accessorKey: "joined",
-    header: "Joined Date",
+    accessorKey: "delete",
+    header: "Status",
   },
 ]
 
@@ -73,7 +66,7 @@ export default function InternTable({ data }: { data: User[] }) {
   const [globalFilter, setGlobalFilter] = useState("")
 
   const table = useReactTable({
-    data: mockData,
+    data,
     columns,
     state: {
       globalFilter,

@@ -1,4 +1,3 @@
-// components/dialogs/MultiStepDialog.tsx
 import {
   Dialog,
   DialogContent,
@@ -23,13 +22,24 @@ type MultiStepDialogProps = {
 
 const MultiStepDialogBox = ({ triggerButton, steps, onSubmit }: MultiStepDialogProps) => {
   const [step, setStep] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
   const reset = () => setStep(0);
 
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (!isOpen) reset();
+  };
+
+  const handleSubmit = () => {
+    onSubmit();
+    setOpen(false); 
+  };
+
   return (
-    <Dialog onOpenChange={reset}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
 
       <DialogContent>
@@ -52,7 +62,7 @@ const MultiStepDialogBox = ({ triggerButton, steps, onSubmit }: MultiStepDialogP
           {step < steps.length - 1 ? (
             <Button onClick={nextStep}>Next</Button>
           ) : (
-            <Button onClick={onSubmit}>Submit</Button>
+            <Button onClick={handleSubmit}>Submit</Button> 
           )}
         </DialogFooter>
       </DialogContent>
