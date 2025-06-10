@@ -25,13 +25,13 @@ import { Button } from "@/components/ui/button"
 import { User } from "@/types/User"
 import { DeleteDialogBox } from "../reuseable/dialogbox/DeleteDialogBox"
 
-export default function InternTable({ data }: { data: User[] }) {
-  const [globalFilter, setGlobalFilter] = useState("")
-  const [tableData, setTableData] = useState<User[]>(data)
+interface InternTableProps {
+  data: User[];
+  onDelete: (id: number) => void;
+}
 
-  const handleDelete = (id: number) => {
-    setTableData((prev) => prev.filter((user) => user.id !== id))
-  }
+export default function InternTable({ data, onDelete }: InternTableProps) {
+  const [globalFilter, setGlobalFilter] = useState("")
 
   const columns: ColumnDef<User>[] = [
     {
@@ -65,16 +65,20 @@ export default function InternTable({ data }: { data: User[] }) {
               Delete
             </span>
           }
-          onConfirm={() => handleDelete(row.original.id)}
+          onConfirm={() => {
+            onDelete(row.original.id)
+          }}
         />
       ),
     },
   ]
 
   const table = useReactTable({
-    data: tableData,
+    data,
     columns,
-    state: { globalFilter },
+    state: {
+      globalFilter,
+    },
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -114,26 +118,15 @@ export default function InternTable({ data }: { data: User[] }) {
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center text-muted-foreground py-10"
-                >
-                  No interns registered
-                </TableCell>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="whitespace-nowrap">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>
@@ -143,9 +136,9 @@ export default function InternTable({ data }: { data: User[] }) {
           Showing {table.getState().pagination.pageIndex * 10 + 1} -{" "}
           {Math.min(
             (table.getState().pagination.pageIndex + 1) * 10,
-            tableData.length
+            data.length
           )}{" "}
-          of {tableData.length}
+          of {data.length}
         </div>
 
         <div className="space-x-2">

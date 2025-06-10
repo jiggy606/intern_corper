@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
 import { User } from "@/types/User"
@@ -185,8 +185,12 @@ const Intern = () => {
         </div>
     )
 
+    const handleDeleteIntern = (id: number) => {
+        setInterns(prev => prev.filter(intern => intern.id !== id))
+    }
+
     return (
-        <div className="space-y-6 px-4 sm:px-6 md:px-10 py-6">
+        <div className="space-y-6 px-4 sm:px-4 md:px-8 py-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-2">
             <h1 className="font-semibold text-2xl sm:text-3xl">Interns</h1>
@@ -212,14 +216,14 @@ const Intern = () => {
         </div>
 
         {interns.length === 0 ? (
-            <div className="flex items-center justify-center h-[50vh] text-center">
-            <p className="text-gray-400 text-lg sm:text-xl font-medium">
-                No interns registered...
-            </p>
-            </div>
-        ) : (
-            <InternTable data={interns} />
-        )}
+        <div className="flex items-center justify-center h-[50vh] text-center">
+          <p className="text-gray-400 text-lg sm:text-xl font-medium">
+            No interns registered...
+          </p>
+        </div>
+      ) : (
+        <InternTable data={interns} onDelete={handleDeleteIntern} />
+      )}
 
         {/* <InternTable data={interns} /> */}
         </div>
