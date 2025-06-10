@@ -197,7 +197,7 @@ const Intern = () => {
 
             <MultiStepDialogBox
             triggerButton={
-                <ReusableButtonOne className="flex gap-2 w-full md:w-auto">
+                <ReusableButtonOne className="flex gap-2 w-full md:w-auto bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]">
                 <Plus size={16} /> Add Intern
                 </ReusableButtonOne>
             }
@@ -220,6 +220,8 @@ const Intern = () => {
         ) : (
             <InternTable data={interns} />
         )}
+
+        {/* <InternTable data={interns} /> */}
         </div>
     )
 }

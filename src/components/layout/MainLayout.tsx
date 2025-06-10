@@ -8,7 +8,10 @@ const MainLayout = () => {
     <SidebarProvider>
       <AppSidebar />
       <main className="flex-1 bg-gray-50">
-        <div className="p-12">
+        <div className="px-6 pt-6">
+          <SidebarTrigger />
+        </div>
+        <div className="px-12 pt-4 pb-12">
           <Outlet />
         </div>
       </main>

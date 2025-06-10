@@ -73,11 +73,11 @@ const MultiStepDialogBox = ({
           )}
 
           {step < steps.length - 1 ? (
-            <Button onClick={nextStep} disabled={!canProceed}>
+            <Button onClick={nextStep} disabled={!canProceed} className="bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]">
               Next
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={!canSubmit}>
+            <Button onClick={handleSubmit} disabled={!canSubmit} className="bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]">
               Submit
             </Button>
           )}

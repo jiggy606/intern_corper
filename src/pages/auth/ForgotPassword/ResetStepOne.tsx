@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import logo from '@/assets/images/logo.jpg';
 
 type Props = {
   onNext: () => void;
@@ -20,6 +21,8 @@ type FormValues = {
 };
 
 const ResetStepOne = ({ onNext }: Props) => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -35,10 +38,12 @@ const ResetStepOne = ({ onNext }: Props) => {
     <div className="flex items-center justify-center min-h-screen px-4">
       <Card className="w-full max-w-xl bg-white rounded-3xl pt-10 pb-16 shadow-md">
         <div className="px-4 sm:px-6 md:px-8">
-          <p className="text-center mb-6 text-sm text-gray-500">Image goes here</p>
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="logo" className="max-h-20" />
+          </div>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl sm:text-3xl font-semibold">Forgot Password</CardTitle>
-            <CardDescription className="text-gray-600 my-2">
+            <CardDescription className="text-gray-600 my-2 font-medium text-base">
               Please enter your email to reset password
             </CardDescription>
           </CardHeader>
@@ -61,9 +66,19 @@ const ResetStepOne = ({ onNext }: Props) => {
                 )}
               </div>
 
-              <Button type="submit" className=" w-full text-base">
-                Reset Password
-              </Button>
+              <div className="space-y-4">
+                <Button type="submit" className="w-full text-base bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]">
+                  Reset Password
+                </Button>
+                <Button
+                  type="button"
+                  className="w-full text-base"
+                  variant="outline"
+                  onClick={() => navigate("/login")}
+                >
+                  Back
+                </Button>
+              </div>
             </form>
           </CardContent>
         </div>

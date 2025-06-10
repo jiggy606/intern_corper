@@ -13,6 +13,7 @@ import {
 } from "../ui/sidebar"
 import { Users, GraduationCap, LayoutDashboard, LogOut } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
+import logo from '@/assets/images/logo.jpg'
 
 const AppSidebar = () => {
 
@@ -39,10 +40,11 @@ const AppSidebar = () => {
 
   return (
     <Sidebar>
-      <SidebarHeader className="mt-15">
-        <h1 className="text-xl font-semibold p-3">ICT Department</h1>
-      </SidebarHeader>
-      
+      <SidebarHeader className="mt-15 flex justify-center items-center">
+        <div>
+          <img src={logo} alt="logo" className="max-h-32 object-contain" />
+        </div>
+      </SidebarHeader>     
       <SidebarContent>
         <SidebarGroup>
           {/* <SidebarGroupLabel>Management</SidebarGroupLabel> */}
@@ -55,8 +57,8 @@ const AppSidebar = () => {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       onClick={() => navigate(item.url)}
-                      className={`border border-green-500 p-6 rounded-full 
-                        ${isActive ? "bg-green-500 text-white" : ""}`}
+                      className={`border border-[#638763] p-6 rounded-full 
+                        ${isActive ? "bg-[#638763] text-white" : ""}`}
                     >
                       <item.icon />
                       <span>{item.title}</span>
@@ -73,7 +75,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem className=" mb-15 p-3">
             <SidebarMenuButton
-              className="border border-green-500 p-6 rounded-full bg-green-500 text-white"
+              className="border border-[#638763] p-6 rounded-full bg-[#638763] text-white"
                 onClick={() => {
                     /* localStorage.removeItem("authToken"); */
                     navigate("/login");

@@ -29,7 +29,7 @@ const ReusableInput: React.FC<ReusableInputProps> = ({
         value={value}
         onChange={onChange}
         name={name}
-        className={`bg-gray-200 text-black placeholder:text-gray-400 ${className}`}
+        className={`bg-gray-100 text-gray-900 placeholder:text-gray-300 ${className}`}
       />
     </div>
   );

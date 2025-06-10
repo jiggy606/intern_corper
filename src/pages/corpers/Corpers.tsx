@@ -172,7 +172,7 @@ const Corpers = () => {
 
             <MultiStepDialogBox
             triggerButton={
-                <ReusableButtonOne className="flex gap-2" >
+                <ReusableButtonOne className="flex gap-2 bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]" >
                 <Plus size={16} /> Add Corper
                 </ReusableButtonOne>
             }

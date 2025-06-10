@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import logo from '@/assets/images/logo.jpg';
 
 type Props = {
   onBack: () => void;
@@ -40,11 +41,13 @@ const ResetStepTwo = ({ onBack }: Props) => {
     <div className="flex items-center justify-center min-h-screen px-4">
       <Card className="w-full max-w-xl bg-white rounded-3xl pt-10 pb-16 shadow-md">
         <div className="px-4 sm:px-6 md:px-8">
-          <p className="text-center mb-6 text-sm text-gray-500">Image goes here</p>
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="logo" className=" max-h-20" />
+          </div>
 
           <CardHeader className="text-center">
             <CardTitle className="text-2xl sm:text-3xl font-semibold">Set a new password</CardTitle>
-            <CardDescription className="text-gray-600 mt-2">
+            <CardDescription className="text-gray-600 mt-2 font-medium text-base">
               Input a different password from the last one
             </CardDescription>
           </CardHeader>
@@ -106,20 +109,13 @@ const ResetStepTwo = ({ onBack }: Props) => {
                   <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
                 )}
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button
-                  className="w-full bg-gray-700 hover:bg-gray-950 text-white rounded-xl px-4 py-3"
-                  type="submit"
-                >
+              <div className="flex flex-col gap-3">
+                <Button className="bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]"> 
                   Submit
-                </button>
-                <button
-                  className="w-full bg-red-400 hover:bg-red-600 text-white rounded-xl px-4 py-3"
-                  type="button"
-                  onClick={onBack}
-                >
-                  Back
-                </button>
+                </Button>
+                <Button variant="destructive" onClick={onBack}>
+                  Cancel
+                  </Button>
               </div>
             </form>
           </CardContent>
