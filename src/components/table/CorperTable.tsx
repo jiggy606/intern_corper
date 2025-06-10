@@ -23,52 +23,55 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { User } from "@/types/User"
+import { DeleteDialogBox } from "../reuseable/dialogbox/DeleteDialogBox"
 
+interface CorperTableProps {
+  data: User[];
+  onDelete: (id: number) => void;
+}
 
-const mockData: User[] = Array.from({ length: 24 }, (_, i) => ({
-  id: i + 1,
-  name: `User ${i + 1}`,
-  phoneNumber: `080000000${i}`,
-  emailAddress: `user${i + 1}@mail.com`,
-  address: `Address ${i + 1}`,
-  workDays: [],
-  startDate: `2023-0${(i % 9) + 1}-01`,
-  endDate: `2023-0${(i % 9) + 2}-01`,
-  department: [],
-  supervisor: [],
-}))
-
-const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => <div className="w-[50px]">{row.getValue("id")}</div>,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "workDays",
-    header: "Work Days",
-  },
-  {
-    accessorKey: "startDate",
-    header: "Start Date",
-  },
-  {
-    accessorKey: "endDate",
-    header: "End Date",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-  },
-]
-
-
-export default function CorperTable({ data }: { data: User[] }) {
+export default function CorperTable({ data, onDelete }: CorperTableProps) {
   const [globalFilter, setGlobalFilter] = useState("")
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "id",
+      header: "ID",
+      cell: ({ row }) => <div className="w-[50px]">{row.getValue("id")}</div>,
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "workDays",
+      header: "Work Days",
+    },
+    {
+      accessorKey: "startDate",
+      header: "Start Date",
+    },
+    {
+      accessorKey: "endDate",
+      header: "End Date",
+    },
+    {
+      header: "Actions",
+      id: "actions",
+      cell: ({ row }) => (
+        <DeleteDialogBox
+          trigger={
+            <span className="text-red-500 hover:underline cursor-pointer">
+              Delete
+            </span>
+          }
+          onConfirm={() => {
+            onDelete(row.original.id)
+          }}
+        />
+      ),
+    },
+  ]
 
   const table = useReactTable({
     data,
@@ -89,16 +92,20 @@ export default function CorperTable({ data }: { data: User[] }) {
         placeholder="Search..."
         value={globalFilter}
         onChange={(e) => setGlobalFilter(e.target.value)}
-        className="w-1/3"
+        className="w-full sm:w-1/2"
       />
 
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-[800px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
+                  <TableHead
+                    key={header.id}
+                    className="cursor-pointer whitespace-nowrap"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {{
                       asc: " 🔼",
@@ -114,7 +121,7 @@ export default function CorperTable({ data }: { data: User[] }) {
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} className="whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -124,15 +131,14 @@ export default function CorperTable({ data }: { data: User[] }) {
         </Table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div className="text-sm text-muted-foreground">
           Showing {table.getState().pagination.pageIndex * 10 + 1} -{" "}
           {Math.min(
             (table.getState().pagination.pageIndex + 1) * 10,
-            mockData.length
+            data.length
           )}{" "}
-          of {mockData.length}
+          of {data.length}
         </div>
 
         <div className="space-x-2">
