@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import logo from '@/assets/images/logo.jpg';
 import logo2 from '@/assets/images/logo2.jpeg'
 
-import { toast } from "sonner"
+// import { toast } from "sonner"
 
 interface LoginFormInputs {
   email: string;
@@ -20,13 +20,14 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormInputs) => {
-    const success = await login(data.email, data.password);
-    if (success) {
-      navigate('/dashboard');
-    } else {
-      alert('Invalid credentials');
-    }
-  };
+  const success = await login(data.email, data.password)
+  if (success) {
+    navigate('/dashboard')
+  } else {
+    alert('Invalid credentials')
+  }
+}
+
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -54,7 +55,7 @@ const Login = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full md:w-3/4 py-4 bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]" >
+            <Button type="submit" className="w-full md:w-3/4 py-4 hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763] cursor-pointer" >
               Log In
             </Button>
 

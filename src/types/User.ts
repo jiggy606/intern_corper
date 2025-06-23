@@ -16,4 +16,5 @@ export type User = {
   endDate: string;
   department: Department[];
   supervisor: Supervisor[];
+  status: string;
 };

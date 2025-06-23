@@ -110,7 +110,7 @@ const ResetStepTwo = ({ onBack }: Props) => {
                 )}
               </div>
               <div className="flex flex-col gap-3">
-                <Button className="bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]"> 
+                <Button className="hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763]"> 
                   Submit
                 </Button>
                 <Button variant="destructive" onClick={onBack}>

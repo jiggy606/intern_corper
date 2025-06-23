@@ -44,6 +44,10 @@ export default function CorperTable({ data, onDelete }: CorperTableProps) {
       header: "Name",
     },
     {
+      accessorKey: "supervisor",
+      header: "Supervisor",
+    },
+    {
       accessorKey: "workDays",
       header: "Work Days",
     },

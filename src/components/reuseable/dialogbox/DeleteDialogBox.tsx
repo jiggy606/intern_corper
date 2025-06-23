@@ -41,7 +41,7 @@ export function DeleteDialogBox({
          
           <Button
             onClick={handleConfirm}
-            className="px-6 py-2 rounded-md bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]"
+            className="px-6 py-2 rounded-md hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763]"
           >
             Delete
           </Button>

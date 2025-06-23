@@ -11,10 +11,7 @@ import PublicRouteWrapper from "./contexts/PublicRouteWrapper";
 export const AppRoutes = () => {
     return (
         <Routes>
-            {/*  <Route path='/' element={<PublicRouteWrapper component={<Login />} />} /> */}
-             {/* <Route path='/forgot-password' element={<PublicRouteWrapper component={<ForgotPassword />} />} /> */}
             <Route path="/login" element={<Login />} />
-            {/* <Route path="/" element={<Login />} /> */}
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
 

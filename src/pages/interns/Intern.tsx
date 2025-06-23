@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { internStore } from "@/stores/internStore";
 import InternTable from "@/components/table/InternTable"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Input } from "@/components/ui/input"
@@ -21,8 +22,10 @@ import { Weekday, WEEKDAYS } from "@/types/User"
 import { ReusableButtonOne } from "@/components/reuseable/button/ReuseableButtonOne"
 
 const Intern = () => {
-  const [interns, setInterns] = useState<User[]>([])
-  const [formData, setFormData] = useState({
+   const interns = internStore((s) => s.interns);
+   const addIntern = internStore((s) => s.addIntern);
+   const deleteIntern = internStore((s) => s.deleteIntern);
+   const [formData, setFormData] = useState({
     id: "",
     name: "",
     phone: "",
@@ -79,14 +82,15 @@ const Intern = () => {
         startDate: formData.startDate,
         workDays: formData.workDays,
         endDate: formData.endDate,
-        phoneNumber: "",
+        phoneNumber:formData.phone,
         emailAddress: "",
         address: "",
         department: [],
-        supervisor: []
+        supervisor: [],
+        status: "active"
         }
 
-        setInterns((prev) => [...prev, newIntern])
+        addIntern(newIntern);
         resetFormData() // Clear form after submission
     }
 
@@ -185,9 +189,9 @@ const Intern = () => {
         </div>
     )
 
-    const handleDeleteIntern = (id: number) => {
+    /* const handleDeleteIntern = (id: number) => {
         setInterns(prev => prev.filter(intern => intern.id !== id))
-    }
+    } */
 
     return (
         <div className="space-y-6 px-4 sm:px-4 md:px-8 py-4">
@@ -201,7 +205,7 @@ const Intern = () => {
 
             <MultiStepDialogBox
             triggerButton={
-                <ReusableButtonOne className="flex gap-2 w-full md:w-auto bg-[#638763] hover:text-[#638763] hover:bg-white hover:border hover:border-[#638763]">
+                <ReusableButtonOne className="flex gap-2 w-full md:w-auto hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763] cursor-pointer">
                 <Plus size={16} /> Add Intern
                 </ReusableButtonOne>
             }
@@ -222,7 +226,7 @@ const Intern = () => {
           </p>
         </div>
       ) : (
-        <InternTable data={interns} onDelete={handleDeleteIntern} />
+        <InternTable data={interns} onDelete={deleteIntern} />
       )}
 
         {/* <InternTable data={interns} /> */}

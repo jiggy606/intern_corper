@@ -57,7 +57,7 @@ const AppSidebar = () => {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       onClick={() => navigate(item.url)}
-                      className={`border border-[#638763] p-6 rounded-full 
+                      className={`border border-[#638763] p-6 rounded-full cursor-pointer
                         ${isActive ? "bg-[#638763] text-white" : ""}`}
                     >
                       <item.icon />
@@ -75,7 +75,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem className=" mb-15 p-3">
             <SidebarMenuButton
-              className="border border-[#638763] p-6 rounded-full bg-[#638763] text-white"
+              className="border border-[#638763] p-6 rounded-full bg-[#638763] text-white cursor-pointer"
                 onClick={() => {
                     /* localStorage.removeItem("authToken"); */
                     navigate("/login");
