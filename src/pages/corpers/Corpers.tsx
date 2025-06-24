@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { corperStore } from "@/stores/corperStore"
+import { useEffect, useState } from "react"
 import CorperTable from "@/components/table/CorperTable"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Input } from "@/components/ui/input"
@@ -15,16 +14,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Plus } from "lucide-react"
-import { User } from "@/types/User"
-import { Weekday, WEEKDAYS } from "@/types/User"
+import { User, Weekday, WEEKDAYS, Department, Supervisor } from "@/types/User"
 import { ReusableButtonOne } from "@/components/reuseable/button/ReuseableButtonOne"
+import { supabase } from "@/lib/supabaseClient"
 
 const Corper = () => {
-  const corpers = corperStore((s) => s.corpers);
-  const addCorper = corperStore((s) => s.addCorper);
-  const deleteCorper = corperStore((s) => s.deleteCorper);
+  const [corpers, setCorpers] = useState<User[]>([])
   const [formData, setFormData] = useState({
-    id: "",
     name: "",
     phone: "",
     email: "",
@@ -38,7 +34,7 @@ const Corper = () => {
   })
 
   const isStepOneValid = formData.name && formData.phone && formData.email && formData.address
-  const isStepTwoValid = 
+  const isStepTwoValid =
     formData.supervisor &&
     formData.workDays.length > 0 &&
     formData.department &&
@@ -47,7 +43,6 @@ const Corper = () => {
 
   const resetFormData = () => {
     setFormData({
-      id: "",
       name: "",
       phone: "",
       email: "",
@@ -73,28 +68,65 @@ const Corper = () => {
     })
   }
 
-  const handleAddCorper = () => {
-    const newCorper: User = {
-      id: corpers.length + 1,
+  const handleAddCorper = async () => {
+    const { data: existingCorpers, error: fetchError } = await supabase
+    .from("corpers")
+    .select("serialNumber")
+    .order("serialNumber", { ascending: false })
+    .limit(1);
+
+    const nextSerial = existingCorpers?.[0]?.serialNumber
+        ? existingCorpers[0].serialNumber + 1
+        : 1;
+    const newCorper: Omit<User, "id"> & { serialNumber: number } = {
       name: formData.name,
       phoneNumber: formData.phone,
       emailAddress: formData.email,
       address: formData.address,
-      startDate: formData.startDate,
+      department: [formData.department as Department],
+      supervisor: [formData.supervisor as Supervisor],
       workDays: formData.workDays,
+      startDate: formData.startDate,
       endDate: formData.endDate,
-      department: [],
-      supervisor: [],
-      status: "active"
+      status: "active",
+      serialNumber: nextSerial,
     }
 
-    addCorper(newCorper);
-    resetFormData();
+    const { error } = await supabase.from("corpers").insert([newCorper]);
+    if (error) {
+        console.error("Insert error:", error);
+    } else {
+        const { data: updatedData, error: fetchError } = await supabase
+        .from("corpers")
+        .select("*");
+        if (updatedData) setCorpers(updatedData);
+        resetFormData();
+    }
   }
 
-  /* const handleDeleteCorper = (id: number) => {
-    setCorpers(prev => prev.filter(corper => corper.id !== id))
-  } */
+  const handleDeleteCorper = async (id: number) => {
+    const { error } = await supabase.from("corpers").delete().eq("id", id);
+    if (error) {
+        console.error("Delete error:", error);
+    } else {
+        const { data: updatedData, error: fetchError } = await supabase.from("corpers").select("*");
+        if (fetchError) {
+        console.error("Fetch error:", fetchError);
+        } else if (updatedData) {
+        setCorpers(updatedData);
+        }
+    }
+    }; 
+
+   useEffect(() => {
+    const fetchCorpers = async () => {
+      const { data, error } = await supabase.from("corpers").select("*")
+      if (data) setCorpers(data)
+      if (error) console.error("Fetch error:", error)
+    }
+
+    fetchCorpers();
+  }, [])
 
   const personalInfoStep = (
     <div className="grid gap-4">
@@ -170,10 +202,10 @@ const Corper = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="H&IS">H&IS</SelectItem>
-            <SelectItem value="SA&DM">SA&DM</SelectItem>
-            <SelectItem value="R&SP">R&SP</SelectItem>
-            <SelectItem value="N&C">N&C</SelectItem>
+            <SelectItem value="H&IS">H & IS</SelectItem>
+            <SelectItem value="SA&DM">SA & DM</SelectItem>
+            <SelectItem value="R&SP">R & SP</SelectItem>
+            <SelectItem value="N&C">N & C</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -224,7 +256,7 @@ const Corper = () => {
           </p>
         </div>
       ) : (
-        <CorperTable data={corpers} onDelete={deleteCorper} />
+        <CorperTable data={corpers} onDelete={handleDeleteCorper} />
       )}
     </div>
   )

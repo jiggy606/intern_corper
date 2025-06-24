@@ -7,7 +7,7 @@ import { corperStore } from '@/stores/corperStore'
 import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
-  const { user } = useAuth(); // ✅ get the logged-in user
+  const { user } = useAuth(); 
 
   const interns = internStore((s) => s.interns);
   const activeInterns = interns.filter((i) => i.status === "active");

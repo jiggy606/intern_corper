@@ -35,17 +35,18 @@ export default function CorperTable({ data, onDelete }: CorperTableProps) {
 
   const columns: ColumnDef<User>[] = [
     {
+      header: "No.",
+      accessorKey: "serialNumber",
+      cell: ({ row }) => row.index + 1 + table.getState().pagination.pageIndex * table.getState().pagination.pageSize,
+    },
+    /* {
       accessorKey: "id",
       header: "ID",
       cell: ({ row }) => <div className="w-[50px]">{row.getValue("id")}</div>,
-    },
+    }, */
     {
       accessorKey: "name",
       header: "Name",
-    },
-    {
-      accessorKey: "supervisor",
-      header: "Supervisor",
     },
     {
       accessorKey: "workDays",

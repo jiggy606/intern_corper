@@ -15,6 +15,9 @@ import { Users, GraduationCap, LayoutDashboard, LogOut } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import logo from '@/assets/images/logo.jpg'
 
+import { supabase } from "@/lib/supabaseClient";
+
+
 const AppSidebar = () => {
 
   const navigate = useNavigate()
@@ -76,9 +79,13 @@ const AppSidebar = () => {
           <SidebarMenuItem className=" mb-15 p-3">
             <SidebarMenuButton
               className="border border-[#638763] p-6 rounded-full bg-[#638763] text-white cursor-pointer"
-                onClick={() => {
-                    /* localStorage.removeItem("authToken"); */
+                onClick={async () => {
+                  const { error } = await supabase.auth.signOut();
+                  if (error) {
+                    console.error("Logout failed:", error.message);
+                  } else {
                     navigate("/login");
+                  }
                 }}
                 >
                 <LogOut />
