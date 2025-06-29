@@ -10,7 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import logo from '@/assets/images/logo.jpg';
+import logo from "@/assets/images/logo.jpg";
+import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient"; // ✅ Make sure this is correctly set up
 
 type Props = {
   onNext: () => void;
@@ -26,12 +28,20 @@ const ResetStepOne = ({ onNext }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Email submitted:", data);
-    onNext();
+  const onSubmit = async (data: FormValues) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+      redirectTo: "http://localhost:5173/reset-password",
+    });
+
+    if (error) {
+      toast.error("Invalid email / Wrong email.");
+    } else {
+      toast.success("Check your inbox for the password reset link.");
+      onNext();
+    }
   };
 
   return (
@@ -42,7 +52,9 @@ const ResetStepOne = ({ onNext }: Props) => {
             <img src={logo} alt="logo" className="max-h-20" />
           </div>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-semibold">Forgot Password</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl font-semibold">
+              Forgot Password
+            </CardTitle>
             <CardDescription className="text-gray-600 my-2 font-medium text-base">
               Please enter your email to reset password
             </CardDescription>
@@ -67,8 +79,12 @@ const ResetStepOne = ({ onNext }: Props) => {
               </div>
 
               <div className="space-y-4">
-                <Button type="submit" className="w-full text-base hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763]">
-                  Reset Password
+                <Button
+                  type="submit"
+                  className="w-full text-base hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763]"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Reset Password"}
                 </Button>
                 <Button
                   type="button"

@@ -11,7 +11,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "../ui/sidebar"
-import { Users, GraduationCap, LayoutDashboard, LogOut } from "lucide-react"
+import { Users, LayoutDashboard, LogOut } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import logo from '@/assets/images/logo.jpg'
 
@@ -37,7 +37,7 @@ const AppSidebar = () => {
   {
     title: "Corpers",
     url: "/dashboard/corper",
-    icon: GraduationCap,
+    icon: Users,
   },
 ]
 

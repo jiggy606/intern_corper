@@ -5,8 +5,9 @@ import Dashboard from "./pages/Dashboard";
 import MainLayout from "./components/layout/MainLayout";
 import Corpers from "./pages/corpers/Corpers";
 import Intern from "./pages/interns/Intern";
-import AddIntern from "./pages/interns/AddIntern";
+// import AddIntern from "./pages/interns/AddIntern";
 import ProtectedRoute from "./contexts/PublicRouteWrapper";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 export const AppRoutes = () => {
   return (
@@ -15,6 +16,7 @@ export const AppRoutes = () => {
 
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path='/reset-password' element={<ResetPassword />} />
 
       <Route
         path="/dashboard"
@@ -27,7 +29,6 @@ export const AppRoutes = () => {
         <Route index element={<Dashboard />} />
         <Route path="corper" element={<Corpers />} />
         <Route path="interns" element={<Intern />} />
-        <Route path="interns/add-intern" element={<AddIntern />} />
       </Route>
     </Routes>
   );

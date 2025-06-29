@@ -13,13 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus } from "lucide-react"
+import { Plus, CalendarIcon } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
 import { User, Weekday, WEEKDAYS, Department, Supervisor } from "@/types/User"
 import { ReusableButtonOne } from "@/components/reuseable/button/ReuseableButtonOne"
 import { supabase } from "@/lib/supabaseClient"
 
 const Corper = () => {
   const [corpers, setCorpers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -69,15 +73,16 @@ const Corper = () => {
   }
 
   const handleAddCorper = async () => {
-    const { data: existingCorpers, error: fetchError } = await supabase
-    .from("corpers")
-    .select("serialNumber")
-    .order("serialNumber", { ascending: false })
-    .limit(1);
+    const { data: existingCorpers } = await supabase
+      .from("corpers")
+      .select("serialNumber")
+      .order("serialNumber", { ascending: false })
+      .limit(1)
 
     const nextSerial = existingCorpers?.[0]?.serialNumber
-        ? existingCorpers[0].serialNumber + 1
-        : 1;
+      ? existingCorpers[0].serialNumber + 1
+      : 1
+
     const newCorper: Omit<User, "id"> & { serialNumber: number } = {
       name: formData.name,
       phoneNumber: formData.phone,
@@ -92,40 +97,42 @@ const Corper = () => {
       serialNumber: nextSerial,
     }
 
-    const { error } = await supabase.from("corpers").insert([newCorper]);
+    const { error } = await supabase.from("corpers").insert([newCorper])
     if (error) {
-        console.error("Insert error:", error);
+      console.error("Insert error:", error)
     } else {
-        const { data: updatedData, error: fetchError } = await supabase
-        .from("corpers")
-        .select("*");
-        if (updatedData) setCorpers(updatedData);
-        resetFormData();
+      const { data: updatedData } = await supabase.from("corpers").select("*")
+      if (updatedData) setCorpers(updatedData)
+      resetFormData()
     }
   }
 
   const handleDeleteCorper = async (id: number) => {
-    const { error } = await supabase.from("corpers").delete().eq("id", id);
+    const { error } = await supabase.from("corpers").delete().eq("id", id)
     if (error) {
-        console.error("Delete error:", error);
+      console.error("Delete error:", error)
     } else {
-        const { data: updatedData, error: fetchError } = await supabase.from("corpers").select("*");
-        if (fetchError) {
-        console.error("Fetch error:", fetchError);
-        } else if (updatedData) {
-        setCorpers(updatedData);
-        }
+      const { data: updatedData, error: fetchError } = await supabase
+        .from("corpers")
+        .select("*")
+      if (fetchError) {
+        console.error("Fetch error:", fetchError)
+      } else if (updatedData) {
+        setCorpers(updatedData)
+      }
     }
-    }; 
+  }
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchCorpers = async () => {
+      setLoading(true)
       const { data, error } = await supabase.from("corpers").select("*")
       if (data) setCorpers(data)
       if (error) console.error("Fetch error:", error)
+      setLoading(false)
     }
 
-    fetchCorpers();
+    fetchCorpers()
   }, [])
 
   const personalInfoStep = (
@@ -167,9 +174,9 @@ const Corper = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="Olu">Olu</SelectItem>
-            <SelectItem value="Bolu">Bolu</SelectItem>
-            <SelectItem value="Tolu">Tolu</SelectItem>
+            <SelectItem value="Olu">Mr Olu</SelectItem>
+            <SelectItem value="Bobgar">Mr Bobgar</SelectItem>
+            <SelectItem value="IBB">Mr Ibrahim</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -210,16 +217,51 @@ const Corper = () => {
         </SelectContent>
       </Select>
 
-      <Input
-        type="date"
-        value={formData.startDate}
-        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-      />
-      <Input
-        type="date"
-        value={formData.endDate}
-        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-      />
+      {/* Start Date Picker */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
+          >
+            {formData.startDate
+              ? format(new Date(formData.startDate), "PPP")
+              : "Pick start date"}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={formData.startDate ? new Date(formData.startDate) : undefined}
+            onSelect={(date) =>
+              setFormData({ ...formData, startDate: date?.toISOString().split("T")[0] || "" })
+            }
+          />
+        </PopoverContent>
+      </Popover>
+
+      {/* End Date Picker */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
+          >
+            {formData.endDate
+              ? format(new Date(formData.endDate), "PPP")
+              : "Pick end date"}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={formData.endDate ? new Date(formData.endDate) : undefined}
+            onSelect={(date) =>
+              setFormData({ ...formData, endDate: date?.toISOString().split("T")[0] || "" })
+            }
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   )
 
@@ -249,7 +291,11 @@ const Corper = () => {
         />
       </div>
 
-      {corpers.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#638763] border-opacity-75" />
+        </div>
+      ) : corpers.length === 0 ? (
         <div className="flex items-center justify-center h-[50vh] text-center">
           <p className="text-gray-400 text-lg sm:text-xl font-medium">
             No corpers registered...

@@ -1,7 +1,7 @@
 export type Weekday = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
 export const WEEKDAYS: Weekday[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-export type Supervisor = 'Olu' | "Ola" | "Bolu";
+export type Supervisor = 'Mr Olu' | "Mr Bobgar" | "Mr Ibrahim";
 
 export type Department = 'SA&DM' | 'N&C' | 'R&SP' | 'H&IS';
 

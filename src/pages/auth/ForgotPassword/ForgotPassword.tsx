@@ -16,7 +16,8 @@ export const ForgotPassword = () => {
   return (
     <div className="w-full max-w-md mx-auto p-4">
       {step === 1 && <ResetStepOne onNext={handleNextStep} />}  
-      {step === 2 && <ResetStepTwo onBack={handlePrevStep} />}
+      {step === 2 && <ResetStepTwo />}
     </div>
   )
+     
 }

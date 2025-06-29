@@ -33,7 +33,6 @@ export function ReusableCard({
             <div className="flex flex-col items-end">
               <h1 className="text-[#638763] text-xs font-medium">{title}</h1>
 
-              {/* dynamic total */}
               <p className="text-[#638763] text-2xl font-semibold">
                 {count}
               </p>
@@ -42,11 +41,14 @@ export function ReusableCard({
 
           <Separator className="my-4" />
 
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center">
             {/* example growth text—keep/remove as you wish */}
-            <p className="mx-4">
+            {/* <p className="mx-4">
               <span className="text-green-600">+55%</span> than last month
-            </p>
+            </p> */}
+
+            {/* analytics here */}
+            <p></p>
 
             <Button
               className="bg-white mr-3 text-[#638763] border border-[#638763] hover:bg-[#638763] hover:text-white cursor-pointer"

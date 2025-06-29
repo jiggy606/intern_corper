@@ -23,7 +23,13 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     checkSession()
   }, [])
 
-  if (loading) return null // optional: add spinner
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-b-4 border-[#638763]" />
+      </div>
+    )
+  }
 
   if (!authenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />

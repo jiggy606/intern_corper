@@ -5,6 +5,10 @@ import InternTable from "@/components/table/InternTable"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { CalendarIcon, Plus } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
 import {
   Select,
   SelectContent,
@@ -13,13 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus } from "lucide-react"
 import { User, Weekday, WEEKDAYS, Department, Supervisor } from "@/types/User"
 import { ReusableButtonOne } from "@/components/reuseable/button/ReuseableButtonOne"
 import { supabase } from "@/lib/supabaseClient"
 
 const Intern = () => {
   const [interns, setInterns] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -69,15 +73,16 @@ const Intern = () => {
   }
 
   const handleAddIntern = async () => {
-    const { data: existingInterns, error: fetchError } = await supabase
-    .from("interns")
-    .select("serialNumber")
-    .order("serialNumber", { ascending: false })
-    .limit(1);
+    const { data: existingInterns } = await supabase
+      .from("interns")
+      .select("serialNumber")
+      .order("serialNumber", { ascending: false })
+      .limit(1)
 
     const nextSerial = existingInterns?.[0]?.serialNumber
-        ? existingInterns[0].serialNumber + 1
-        : 1;
+      ? existingInterns[0].serialNumber + 1
+      : 1
+
     const newIntern: Omit<User, "id"> & { serialNumber: number } = {
       name: formData.name,
       phoneNumber: formData.phone,
@@ -92,40 +97,44 @@ const Intern = () => {
       serialNumber: nextSerial,
     }
 
-    const { error } = await supabase.from("interns").insert([newIntern]);
+    const { error } = await supabase.from("interns").insert([newIntern])
     if (error) {
-        console.error("Insert error:", error);
+      console.error("Insert error:", error)
     } else {
-        const { data: updatedData, error: fetchError } = await supabase
+      const { data: updatedData, error: fetchError } = await supabase
         .from("interns")
-        .select("*");
-        if (updatedData) setInterns(updatedData);
-        resetFormData();
+        .select("*")
+      if (updatedData) setInterns(updatedData)
+      resetFormData()
     }
   }
 
   const handleDeleteIntern = async (id: number) => {
-    const { error } = await supabase.from("interns").delete().eq("id", id);
+    const { error } = await supabase.from("interns").delete().eq("id", id)
     if (error) {
-        console.error("Delete error:", error);
+      console.error("Delete error:", error)
     } else {
-        const { data: updatedData, error: fetchError } = await supabase.from("interns").select("*");
-        if (fetchError) {
-        console.error("Fetch error:", fetchError);
-        } else if (updatedData) {
-        setInterns(updatedData);
-        }
+      const { data: updatedData, error: fetchError } = await supabase
+        .from("interns")
+        .select("*")
+      if (fetchError) {
+        console.error("Fetch error:", fetchError)
+      } else if (updatedData) {
+        setInterns(updatedData)
+      }
     }
-    }; 
+  }
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchInterns = async () => {
+      setLoading(true)
       const { data, error } = await supabase.from("interns").select("*")
       if (data) setInterns(data)
       if (error) console.error("Fetch error:", error)
+      setLoading(false)
     }
 
-    fetchInterns();
+    fetchInterns()
   }, [])
 
   const personalInfoStep = (
@@ -167,9 +176,9 @@ const Intern = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="Olu">Olu</SelectItem>
-            <SelectItem value="Bolu">Bolu</SelectItem>
-            <SelectItem value="Tolu">Tolu</SelectItem>
+            <SelectItem value="Olu">Mr Olu</SelectItem>
+            <SelectItem value="Bobgar">Mr Bobgar</SelectItem>
+            <SelectItem value="IBB">Mr Ibrahim</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -210,16 +219,51 @@ const Intern = () => {
         </SelectContent>
       </Select>
 
-      <Input
-        type="date"
-        value={formData.startDate}
-        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-      />
-      <Input
-        type="date"
-        value={formData.endDate}
-        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-      />
+      {/* Start Date Picker */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
+          >
+            {formData.startDate
+              ? format(new Date(formData.startDate), "PPP")
+              : "Pick start date"}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={formData.startDate ? new Date(formData.startDate) : undefined}
+            onSelect={(date) =>
+              setFormData({ ...formData, startDate: date?.toISOString().split("T")[0] || "" })
+            }
+          />
+        </PopoverContent>
+      </Popover>
+
+      {/* End Date Picker */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
+          >
+            {formData.endDate
+              ? format(new Date(formData.endDate), "PPP")
+              : "Pick end date"}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={formData.endDate ? new Date(formData.endDate) : undefined}
+            onSelect={(date) =>
+              setFormData({ ...formData, endDate: date?.toISOString().split("T")[0] || "" })
+            }
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   )
 
@@ -249,7 +293,11 @@ const Intern = () => {
         />
       </div>
 
-      {interns.length === 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#638763] border-opacity-75" />
+        </div>
+      ) : interns.length === 0 ? (
         <div className="flex items-center justify-center h-[50vh] text-center">
           <p className="text-gray-400 text-lg sm:text-xl font-medium">
             No interns registered...
