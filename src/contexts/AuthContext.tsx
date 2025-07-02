@@ -5,6 +5,9 @@ interface User {
   id: string
   email: string
   name?: string
+  user_metadata?: {
+    name?: string
+  }
 }
 
 interface AuthContextType {
@@ -31,9 +34,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const mapUser = (u: any): User => ({
     id: u.id,
     email: u.email ?? '',
-    name: u.user_metadata?.full_name ?? u.email ?? '',
+    name: u.user_metadata?.name ?? u.email ?? '',
   });
-
 
   // 1️⃣  Bootstrap on first load
   useEffect(() => {

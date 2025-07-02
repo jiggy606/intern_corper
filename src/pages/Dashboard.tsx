@@ -2,19 +2,11 @@ import AdminDetails from '@/components/AdminDetails'
 import UserTypeChart from '@/components/UserTypeChart'
 import { ReusableCard } from '@/components/reuseable/card/ReuseableCard'
 import React, { useEffect, useState } from 'react'
-import { internStore } from '@/stores/internStore'
-import { corperStore } from '@/stores/corperStore'
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from '@/lib/supabaseClient'
 
 const Dashboard = () => {
   const { user } = useAuth(); 
-
-  const interns = internStore((s) => s.interns);
-  const activeInterns = interns.filter((i) => i.status === "active");
-
-  const corpers = corperStore((s) => s.corpers);
-  const activeCorpers = corpers.filter((i) => i.status === "active");
 
   const [internCount, setInternCount] = useState(0)
   const [corperCount, setCorperCount] = useState(0)
@@ -47,14 +39,21 @@ const Dashboard = () => {
     fetchCounts();
   }, []);
 
+  const truncate = (str: string, max = 12) =>
+    str.length > max ? str.slice(0, max) + '...' : str;
+
+  const displayName = truncate(
+    user?.user_metadata?.name || user?.email || '',
+    12
+  );
 
   return (
     <div className='space-y-6 p-4 scroll-smooth'>
       <div>
         <h1 className='font-semibold text-4xl text-[#638763] mb-5'>
-          Welcome {user?.name || user?.email}
+          Welcome {truncate(user?.name || user?.email || '')}
         </h1>
-        
+
         <div className='flex flex-col md:flex-row gap-4 md:gap-10 justify-between'>
           <ReusableCard title='Active Interns' type='Intern table' to='/dashboard/interns' count={internCount} />
           <ReusableCard title='Active Corpers' type='Corper table' to='/dashboard/corper' count={corperCount} />
@@ -69,11 +68,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className=' space-y-4'>
+      <div className='space-y-4'>
         <AdminDetails />
       </div>
     </div>
   )
 }
 
-export default Dashboard
+export default Dashboard;

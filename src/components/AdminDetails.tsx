@@ -19,8 +19,8 @@ const AdminDetails = () => {
       </div>
 
       <div className='flex justify-between'>
-        <p className="font-medium text-gray-500">Personal Number:</p>
-        <h1 className="text-xl font-bold text-[#638763]">A123456</h1> {/* Update if you store this */}
+        <p className="font-medium text-gray-500">User Role:</p>
+        <h1 className="text-xl font-bold text-[#638763]">Admin</h1> {/* Update if you store this */}
       </div>
 
       <div className='flex justify-between'>
