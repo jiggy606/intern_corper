@@ -39,11 +39,6 @@ export default function InternTable({ data, onDelete }: InternTableProps) {
       accessorKey: "serialNumber",
       cell: ({ row }) => row.index + 1 + table.getState().pagination.pageIndex * table.getState().pagination.pageSize,
     },
-    /* {
-      accessorKey: "id",
-      header: "ID",
-      cell: ({ row }) => <div className="w-[50px]">{row.getValue("id")}</div>,
-    }, */
     {
       accessorKey: "name",
       header: "Name",
@@ -51,6 +46,33 @@ export default function InternTable({ data, onDelete }: InternTableProps) {
     {
       accessorKey: "workDays",
       header: "Work Days",
+      cell: ({ row }) => row.original.workDays.join(", "),
+    },
+    {
+      accessorKey: "department",
+      header: "Departments",
+      cell: ({ row }) => {
+        const departments = row.original.department as any[];
+        if (!departments || departments.length === 0) return "N/A";
+        console.log("Department column value:", row.original.department);
+
+        return (
+          <div className="space-y-1 text-sm">
+            {departments.map((dept, index) => (
+              <div key={index} className="border p-2 rounded-md bg-muted/30">
+                <div className="font-medium">{dept.name}</div>
+                <div className="text-xs">Start: {dept.startDate}</div>
+                <div className="text-xs">End: {dept.endDate}</div>
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "supervisor",
+      header: "Supervisor",
+      cell: ({ row }) => row.original.supervisor.join(", "),
     },
     {
       accessorKey: "startDate",

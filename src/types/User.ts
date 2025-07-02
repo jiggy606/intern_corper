@@ -14,7 +14,11 @@ export type User = {
   workDays: Weekday[];
   startDate: string;
   endDate: string;
-  department: Department[];
+  department: {
+    name: Department;
+    startDate: string;
+    endDate: string;
+  }[];
   supervisor: Supervisor[];
   status: string;
 };

@@ -2,26 +2,14 @@
 
 import { useEffect, useState } from "react"
 import CorperTable from "@/components/table/CorperTable"
+import FormSteps from "@/components/reuseable/forms/FormSteps"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Plus, CalendarIcon } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { User, Weekday, WEEKDAYS, Department, Supervisor } from "@/types/User"
+import { Plus } from "lucide-react"
+import { User, Weekday, Department, Supervisor } from "@/types/User"
 import { ReusableButtonOne } from "@/components/reuseable/button/ReuseableButtonOne"
 import { supabase } from "@/lib/supabaseClient"
 
-const Corper = () => {
+const Corpers = () => {
   const [corpers, setCorpers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [formData, setFormData] = useState({
@@ -30,20 +18,28 @@ const Corper = () => {
     email: "",
     address: "",
     workDays: [] as Weekday[],
-    department: "",
-    startDate: "",
-    endDate: "",
+    departments: [] as {
+      name: Department
+      startDate: string
+      endDate: string
+    }[],
     supervisor: "",
-    status: ""
+    status: "",
+    getAvailableDepartments: () => {
+      const allDepartments: Department[] = ["H&IS", "SA&DM", "R&SP", "N&C"]
+      const selected = formData.departments.map((d) => d.name)
+      return allDepartments.filter((d) => !selected.includes(d))
+    }
   })
 
   const isStepOneValid = formData.name && formData.phone && formData.email && formData.address
   const isStepTwoValid =
     formData.supervisor &&
     formData.workDays.length > 0 &&
-    formData.department &&
-    formData.startDate &&
-    formData.endDate
+    formData.departments.length > 0 &&
+    formData.departments.every(
+      (dept) => dept.name && dept.startDate && dept.endDate
+    )
 
   const resetFormData = () => {
     setFormData({
@@ -52,11 +48,13 @@ const Corper = () => {
       email: "",
       address: "",
       workDays: [],
-      department: "",
-      startDate: "",
-      endDate: "",
+      departments: [],
       supervisor: "",
-      status: ""
+      status: "",
+      getAvailableDepartments: () => {
+        const allDepartments: Department[] = ["H&IS", "SA&DM", "R&SP", "N&C"]
+        return allDepartments
+      }
     })
   }
 
@@ -88,11 +86,11 @@ const Corper = () => {
       phoneNumber: formData.phone,
       emailAddress: formData.email,
       address: formData.address,
-      department: [formData.department as Department],
+      department: formData.departments.map((dept) => dept.name),
       supervisor: [formData.supervisor as Supervisor],
       workDays: formData.workDays,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      startDate: formData.departments[0]?.startDate || "",
+      endDate: formData.departments[formData.departments.length - 1]?.endDate || "",
       status: "active",
       serialNumber: nextSerial,
     }
@@ -101,7 +99,9 @@ const Corper = () => {
     if (error) {
       console.error("Insert error:", error)
     } else {
-      const { data: updatedData } = await supabase.from("corpers").select("*")
+      const { data: updatedData, error: fetchError } = await supabase
+        .from("corpers")
+        .select("*")
       if (updatedData) setCorpers(updatedData)
       resetFormData()
     }
@@ -135,135 +135,11 @@ const Corper = () => {
     fetchCorpers()
   }, [])
 
-  const personalInfoStep = (
-    <div className="grid gap-4">
-      <Input
-        type="text"
-        placeholder="Full Name"
-        value={formData.name}
-        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      />
-      <Input
-        type="tel"
-        placeholder="Phone Number"
-        value={formData.phone}
-        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-      />
-      <Input
-        type="email"
-        placeholder="Email Address"
-        value={formData.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-      />
-      <Input
-        type="text"
-        placeholder="Address"
-        value={formData.address}
-        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-      />
-    </div>
-  )
-
-  const workDetailsStep = (
-    <div className="grid gap-4">
-      <Select
-        onValueChange={(value) => setFormData({ ...formData, supervisor: value })}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Supervisor" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="Olu">Mr Olu</SelectItem>
-            <SelectItem value="Bobgar">Mr Bobgar</SelectItem>
-            <SelectItem value="IBB">Mr Ibrahim</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
-      <div className="py-2">
-        <p className="font-medium text-base mb-2">Select workdays:</p>
-        <div className="flex flex-wrap gap-3 text-sm">
-          {WEEKDAYS.map((day) => (
-            <label key={day} className="flex items-center space-x-2">
-              <Checkbox
-                checked={formData.workDays.includes(day)}
-                onCheckedChange={() => toggleWorkDay(day)}
-              />
-              <span>{day}</span>
-            </label>
-          ))}
-        </div>
-        {formData.workDays.length >= 3 && (
-          <p className="text-xs font-medium text-red-500 mt-3">
-            Maximum of 3 days allowed!
-          </p>
-        )}
-      </div>
-
-      <Select
-        onValueChange={(value) => setFormData({ ...formData, department: value })}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Department" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="H&IS">H & IS</SelectItem>
-            <SelectItem value="SA&DM">SA & DM</SelectItem>
-            <SelectItem value="R&SP">R & SP</SelectItem>
-            <SelectItem value="N&C">N & C</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
-      {/* Start Date Picker */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
-          >
-            {formData.startDate
-              ? format(new Date(formData.startDate), "PPP")
-              : "Pick start date"}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            mode="single"
-            selected={formData.startDate ? new Date(formData.startDate) : undefined}
-            onSelect={(date) =>
-              setFormData({ ...formData, startDate: date?.toISOString().split("T")[0] || "" })
-            }
-          />
-        </PopoverContent>
-      </Popover>
-
-      {/* End Date Picker */}
-      <Popover>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="w-full px-4 py-2 border rounded-md text-left font-normal text-sm"
-          >
-            {formData.endDate
-              ? format(new Date(formData.endDate), "PPP")
-              : "Pick end date"}
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-          <Calendar
-            mode="single"
-            selected={formData.endDate ? new Date(formData.endDate) : undefined}
-            onSelect={(date) =>
-              setFormData({ ...formData, endDate: date?.toISOString().split("T")[0] || "" })
-            }
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
-  )
+  const { personalInfoStep, workDetailsStep } = FormSteps({
+    formData,
+    setFormData,
+    toggleWorkDay,
+  })
 
   return (
     <div className="space-y-6 px-4 sm:px-4 md:px-8 py-4">
@@ -298,7 +174,7 @@ const Corper = () => {
       ) : corpers.length === 0 ? (
         <div className="flex items-center justify-center h-[50vh] text-center">
           <p className="text-gray-400 text-lg sm:text-xl font-medium">
-            No corpers registered...
+            No Corpers registered...
           </p>
         </div>
       ) : (
@@ -308,4 +184,4 @@ const Corper = () => {
   )
 }
 
-export default Corper
+export default Corpers

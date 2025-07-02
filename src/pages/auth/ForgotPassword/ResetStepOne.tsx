@@ -12,7 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/images/logo.jpg";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabaseClient"; // ✅ Make sure this is correctly set up
+import { supabase } from "@/lib/supabaseClient"; 
 
 type Props = {
   onNext: () => void;
@@ -33,7 +33,7 @@ const ResetStepOne = ({ onNext }: Props) => {
 
   const onSubmit = async (data: FormValues) => {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: "http://localhost:5173/reset-password",
+      redirectTo: `${import.meta.env.VITE_SITE_URL}/reset-password`,
     });
 
     if (error) {
