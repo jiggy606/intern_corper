@@ -6,9 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 type ReusableCardProps = {
   title: string;
-  type: string;
-  to: string;
-  count: number;          
+  type?: string;
+  to?: string; 
+  count: number;
+  total?: number;          
   description?: string;
   className?: string;
 };
@@ -18,6 +19,7 @@ export function ReusableCard({
   type,
   to,
   count,
+  total,
   description,
   className = "",
 }: ReusableCardProps) {
@@ -50,12 +52,14 @@ export function ReusableCard({
             {/* analytics here */}
             <p></p>
 
-            <Button
-              className="bg-white mr-3 text-[#638763] border border-[#638763] hover:bg-[#638763] hover:text-white cursor-pointer"
-              onClick={() => navigate(to)}
-            >
-              {type}
-            </Button>
+            {to && (
+              <Button
+                className="bg-white mr-3 text-[#638763] border border-[#638763] hover:bg-[#638763] hover:text-white cursor-pointer"
+                onClick={() => navigate(to)}
+              >
+                {type}
+              </Button>
+            )}
           </div>
 
           {description && (

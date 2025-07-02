@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import InternTable from "@/components/table/InternTable"
+import UserTable from "@/components/table/UserTable"
 import FormSteps from "@/components/reuseable/forms/FormSteps"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Plus } from "lucide-react"
@@ -178,7 +179,7 @@ const Intern = () => {
           </p>
         </div>
       ) : (
-        <InternTable data={interns} onDelete={handleDeleteIntern} />
+       <UserTable data={interns} onDelete={handleDeleteIntern} tableType="intern" />
       )}
     </div>
   )

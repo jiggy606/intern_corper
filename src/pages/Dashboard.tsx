@@ -18,23 +18,35 @@ const Dashboard = () => {
 
   const [internCount, setInternCount] = useState(0)
   const [corperCount, setCorperCount] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
 
   useEffect(() => {
     const fetchCounts = async () => {
-      const { count: internTotal } = await supabase
+      const { count: internTotal, error: internError } = await supabase
         .from("interns")
-        .select("*", { count: "exact", head: true })
+        .select("*", { count: "exact", head: true });
 
-      const { count: corperTotal } = await supabase
+      const { count: corperTotal, error: corperError } = await supabase
         .from("corpers")
-        .select("*", { count: "exact", head: true })
+        .select("*", { count: "exact", head: true });
 
-      setInternCount(internTotal || 0)
-      setCorperCount(corperTotal || 0)
-    }
+      if (internError || corperError) {
+        console.error("Error fetching counts:", internError || corperError);
+        return;
+      }
 
-    fetchCounts()
-  }, [])
+      const internCountSafe = internTotal || 0;
+      const corperCountSafe = corperTotal || 0;
+      const combinedTotal = internCountSafe + corperCountSafe;
+
+      setInternCount(internCountSafe);
+      setCorperCount(corperCountSafe);
+      setTotalCount(combinedTotal);
+    };
+
+    fetchCounts();
+  }, []);
+
 
   return (
     <div className='space-y-6 p-4 scroll-smooth'>
@@ -46,6 +58,7 @@ const Dashboard = () => {
         <div className='flex flex-col md:flex-row gap-4 md:gap-10 justify-between'>
           <ReusableCard title='Active Interns' type='Intern table' to='/dashboard/interns' count={internCount} />
           <ReusableCard title='Active Corpers' type='Corper table' to='/dashboard/corper' count={corperCount} />
+          <ReusableCard title='All Active Members' count={totalCount} />
         </div>
       </div>
 

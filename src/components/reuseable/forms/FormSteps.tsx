@@ -111,7 +111,7 @@ const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
           <SelectGroup>
             <SelectItem value="Mr Olu">Mr Olu</SelectItem>
             <SelectItem value="Mr Bobgar">Mr Bobgar</SelectItem>
-            <SelectItem value="Mr Ibtahim">Mr Ibrahim</SelectItem>
+            <SelectItem value="Mr Ibrahim">Mr Ibrahim</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

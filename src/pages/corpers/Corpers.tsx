@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import CorperTable from "@/components/table/CorperTable"
+import UserTable from "@/components/table/UserTable"
 import FormSteps from "@/components/reuseable/forms/FormSteps"
 import MultiStepDialogBox from "@/components/reuseable/dialogbox/MultiStepDialogBox"
 import { Plus } from "lucide-react"
@@ -86,7 +87,7 @@ const Corpers = () => {
       phoneNumber: formData.phone,
       emailAddress: formData.email,
       address: formData.address,
-      department: formData.departments.map((dept) => dept.name),
+      department: formData.departments,
       supervisor: [formData.supervisor as Supervisor],
       workDays: formData.workDays,
       startDate: formData.departments[0]?.startDate || "",
@@ -178,7 +179,7 @@ const Corpers = () => {
           </p>
         </div>
       ) : (
-        <CorperTable data={corpers} onDelete={handleDeleteCorper} />
+        <UserTable data={corpers} onDelete={handleDeleteCorper} tableType="corper" />
       )}
     </div>
   )

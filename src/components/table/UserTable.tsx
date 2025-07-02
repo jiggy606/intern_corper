@@ -1,0 +1,192 @@
+"use client"
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+
+import { useState } from "react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { User } from "@/types/User"
+import { DeleteDialogBox } from "../reuseable/dialogbox/DeleteDialogBox"
+
+interface UserTableProps {
+  data: User[];
+  onDelete: (id: number) => void;
+  tableType: "intern" | "corper";
+}
+
+export default function UserTable({ data, onDelete, tableType = "intern" }: UserTableProps) {
+  const [globalFilter, setGlobalFilter] = useState("")
+
+  const columns: ColumnDef<User>[] = [
+    {
+      header: "No.",
+      accessorKey: "serialNumber",
+      cell: ({ row }) => row.index + 1 + table.getState().pagination.pageIndex * table.getState().pagination.pageSize,
+    },
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "workDays",
+      header: "Work Days",
+      cell: ({ row }) => row.original.workDays.join(", "),
+    },
+    {
+      accessorKey: "department",
+      header: "Departments",
+      cell: ({ row }) => {
+        const departments = row.original.department as any[];
+        if (!departments || departments.length === 0) return "N/A";
+
+        return (
+          <div className="space-y-1 text-sm">
+            {departments.map((dept, index) => (
+              <div key={index} className="border p-2 rounded-md bg-muted/30">
+                <div className="font-medium">{dept.name}</div>
+                <div className="text-xs">Start: {dept.startDate}</div>
+                <div className="text-xs">End: {dept.endDate}</div>
+              </div>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "supervisor",
+      header: "Supervisor",
+      cell: ({ row }) => row.original.supervisor.join(", "),
+    },
+    {
+      accessorKey: "startDate",
+      header: "Start Date",
+    },
+    {
+      accessorKey: "endDate",
+      header: "End Date",
+    },
+    {
+      header: "Actions",
+      id: "actions",
+      cell: ({ row }) => (
+        <DeleteDialogBox
+          trigger={
+            <span className="text-red-500 hover:underline cursor-pointer">
+              Delete
+            </span>
+          }
+          onConfirm={() => {
+            onDelete(row.original.id)
+          }}
+        />
+      ),
+    },
+  ]
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  })
+
+  return (
+    <div className="space-y-5 py-4">
+      <Input
+        placeholder="Search..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        className="w-full sm:w-1/2"
+      />
+
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-[800px]">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="cursor-pointer whitespace-nowrap"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {{
+                      asc: " 🔼",
+                      desc: " 🔽",
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+        <div className="text-sm text-muted-foreground">
+          Showing {table.getState().pagination.pageIndex * 10 + 1} - {" "}
+          {Math.min(
+            (table.getState().pagination.pageIndex + 1) * 10,
+            data.length
+          )} {" "}
+          of {data.length}
+        </div>
+
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
