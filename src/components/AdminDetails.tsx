@@ -15,7 +15,7 @@ const AdminDetails = () => {
 
       <div className='flex justify-between'>
         <p className="font-medium text-gray-500">Admin Name:</p>
-        <h1 className="text-xl font-bold text-[#638763]">{user?.name || user?.email}</h1>
+        <h1 className="text-xl font-bold text-[#638763]">{user?.name}</h1>
       </div>
 
       <div className='flex justify-between'>
