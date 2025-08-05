@@ -62,7 +62,7 @@ const Dashboard = () => {
       </div>
 
       <div>
-        <h1 className='text-2xl font-semibold'>Chart Rep</h1>
+        <h1 className='text-2xl font-semibold'>Chart Representation</h1>
         <div>
           <UserTypeChart internCount={internCount} corperCount={corperCount} />
         </div>
