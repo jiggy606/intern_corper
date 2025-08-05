@@ -196,9 +196,8 @@ const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
                 </PopoverTrigger>
                 <PopoverContent>
                   <Calendar
-                    mode="single"
-                    selected={dept.startDate ? new Date(dept.startDate) : undefined}
-                    onSelect={(date) =>
+                    selected={dept.startDate ? new Date(dept.startDate) : null}
+                    onChange={(date) =>
                       updateDepartment(index, "startDate", date?.toISOString().split("T")[0] || "")
                     }
                   />
@@ -213,9 +212,8 @@ const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
                 </PopoverTrigger>
                 <PopoverContent>
                   <Calendar
-                    mode="single"
-                    selected={dept.endDate ? new Date(dept.endDate) : undefined}
-                    onSelect={(date) =>
+                    selected={dept.endDate ? new Date(dept.endDate) : null}
+                    onChange={(date) =>
                       updateDepartment(index, "endDate", date?.toISOString().split("T")[0] || "")
                     }
                   />
