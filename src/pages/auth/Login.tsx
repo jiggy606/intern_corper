@@ -84,7 +84,7 @@ const Login = () => {
           </form>
         </div>
 
-        <div className="w-full md:w-1/2 flex items-center justify-center p-12">
+        <div className="hidden md:flex w-full md:w-1/2 items-center justify-center p-12">
           <img src={logo} alt="Logo" className="max-h-80 object-contain" />
         </div>
       </div>
