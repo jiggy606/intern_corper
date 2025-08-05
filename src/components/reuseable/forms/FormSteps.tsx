@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { WEEKDAYS, Department, Supervisor, Weekday } from "@/types/User";
+import { WEEKDAYS, Department, Weekday } from "@/types/User";
 import { ReusableButtonOne } from "../button/ReuseableButtonOne";
 
 type DepartmentEntry = {
@@ -39,20 +39,42 @@ type Props = {
   toggleWorkDay: (day: Weekday) => void;
 };
 
+const ALL_DEPARTMENTS: Department[] = ['SA&DM', 'N&C', 'R&SP', 'H&IS'];
+
 const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
+  // 🔁 Auto-remove expired departments
+  const removeExpiredDepartments = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setFormData((prev) => ({
+      ...prev,
+      departments: prev.departments.filter(
+        (dept) => !dept.endDate || dept.endDate >= today
+      ),
+    }));
+  };
+
+  useEffect(() => {
+    removeExpiredDepartments(); // Run once on mount
+
+    const interval = setInterval(() => {
+      removeExpiredDepartments(); // Re-run every hour
+    }, 60 * 60 * 1000); // 1 hour
+
+    return () => clearInterval(interval); // Cleanup
+  }, []);
+
   const addDepartment = () => {
     setFormData((prev) => {
-        if (prev.departments.length >= 3) return prev;
-        return {
+      if (prev.departments.length >= 3) return prev;
+      return {
         ...prev,
         departments: [
-            ...prev.departments,
-            { name: "" as Department, startDate: "", endDate: "" },
+          ...prev.departments,
+          { name: "" as Department, startDate: "", endDate: "" },
         ],
-        };
+      };
     });
-    };
-
+  };
 
   const updateDepartment = (
     index: number,
@@ -144,10 +166,16 @@ const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="H&IS">H & IS</SelectItem>
-                  <SelectItem value="SA&DM">SA & DM</SelectItem>
-                  <SelectItem value="R&SP">R & SP</SelectItem>
-                  <SelectItem value="N&C">N & C</SelectItem>
+                  {ALL_DEPARTMENTS.filter(
+                    (d) =>
+                      !formData.departments.some(
+                        (selectedDept, i) => selectedDept.name === d && i !== index
+                      )
+                  ).map((deptOption) => (
+                    <SelectItem key={deptOption} value={deptOption}>
+                      {deptOption.replace(/&/g, " & ")}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -197,17 +225,16 @@ const FormSteps = ({ formData, setFormData, toggleWorkDay }: Props) => {
           </div>
         ))}
         <ReusableButtonOne
-            onClick={addDepartment}
-            disabled={formData.departments.length >= 3}
-            className={`text-sm px-2 py-1 font-medium rounded-md border ${
-                formData.departments.length >= 3
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'hover:bg-[#638763] bg-white hover:text-white text-[#638763] border-[#638763] cursor-pointer'
-            }`}
-            >
-            + Add Department
+          onClick={addDepartment}
+          disabled={formData.departments.length >= 3}
+          className={`text-sm px-2 py-1 font-medium rounded-md border ${
+            formData.departments.length >= 3
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'hover:bg-[#638763] bg-white hover:text-white text-[#638763] border-[#638763] cursor-pointer'
+          }`}
+        >
+          + Add Department
         </ReusableButtonOne>
-
       </div>
     </div>
   );

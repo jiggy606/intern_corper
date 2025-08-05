@@ -72,7 +72,7 @@ const Login = () => {
             </div>
 
             <Button type="submit" className="w-full md:w-3/4 py-4 hover:bg-[#638763] bg-white hover:text-white text-[#638763] border border-[#638763] cursor-pointer" >
-              Log In
+              Login
             </Button>
 
             <Link
@@ -84,7 +84,7 @@ const Login = () => {
           </form>
         </div>
 
-        <div className="w-full md:w-1/2 flex items-center justify-center p-12">
+        <div className="hidden md:flex w-full md:w-1/2 items-center justify-center p-12">
           <img src={logo} alt="Logo" className="max-h-80 object-contain" />
         </div>
       </div>
